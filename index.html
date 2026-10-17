@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#07090c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MotoDash">
+  <title>MotoDash</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Status bar -->
+    <header class="status">
+      <div class="gps" id="gpsStatus"><span class="dot"></span><span id="gpsText">GPS off</span></div>
+      <div class="clock" id="clock">--:--</div>
+      <div class="status-actions">
+        <button class="icon-btn" id="btnSettings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Alert banners -->
+    <div class="alerts" id="alerts"></div>
+
+    <main class="dash">
+      <!-- Speedometer -->
+      <section class="gauge-wrap">
+        <svg class="gauge" viewBox="0 0 300 230" aria-hidden="true">
+          <defs>
+            <linearGradient id="arcGrad" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="260" y2="0">
+              <stop offset="0" stop-color="#2be0a0"/>
+              <stop offset="0.6" stop-color="#ffc83d"/>
+              <stop offset="1" stop-color="#ff4d4d"/>
+            </linearGradient>
+          </defs>
+          <g id="ticks"></g>
+          <path id="arcBg" class="arc-bg" d=""/>
+          <path id="arcFg" class="arc-fg" d="" stroke="url(#arcGrad)"/>
+          <g id="tickLabels"></g>
+          <text id="speed" class="speed" x="150" y="150">0</text>
+          <text class="speed-unit" x="150" y="182">km/h</text>
+        </svg>
+        <div class="odo">
+          <span class="odo-label">ODO</span>
+          <span class="odo-value" id="odo">010820</span><span class="odo-dec" id="odoDec">.0</span>
+          <span class="odo-unit">km</span>
+        </div>
+      </section>
+
+      <!-- Trip -->
+      <section class="card trip">
+        <div class="card-head">
+          <span class="card-title">TRIP</span>
+          <button class="chip" id="btnTripReset">Reset</button>
+        </div>
+        <div class="trip-main"><span id="tripKm">0.0</span><small>km</small></div>
+        <div class="trip-stats">
+          <div><span class="lbl">Time</span><span id="tripTime">0:00</span></div>
+          <div><span class="lbl">Avg</span><span id="tripAvg">0</span></div>
+          <div><span class="lbl">Max</span><span id="tripMax">0</span></div>
+        </div>
+      </section>
+
+      <!-- Fuel -->
+      <section class="card fuel" id="fuelCard">
+        <div class="card-head">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17"/><path d="M3 22h12"/><path d="M15 10h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V8l-3-3"/><path d="M6 8h6"/></svg>
+            FUEL
+          </span>
+          <span class="card-sub" id="fuelSub">since fill 0 km</span>
+        </div>
+        <div class="meter"><div class="meter-fill" id="fuelBar"></div></div>
+        <div class="card-row">
+          <div class="big"><span id="fuelKm">150</span><small>km left</small></div>
+          <button class="action" id="btnRefuel">Paid <b id="refuelPriceLbl">20</b> DT</button>
+        </div>
+      </section>
+
+      <!-- Oil -->
+      <section class="card oil" id="oilCard">
+        <div class="card-head">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s-6 6.5-6 11a6 6 0 0 0 12 0c0-4.5-6-11-6-11z"/></svg>
+            OIL · VIDANGE
+          </span>
+          <span class="card-sub">next at <b id="oilNext">11000</b> km</span>
+        </div>
+        <div class="meter"><div class="meter-fill" id="oilBar"></div></div>
+        <div class="card-row">
+          <div class="big"><span id="oilLeft">180</span><small>km to change</small></div>
+          <button class="action" id="btnOil">Oil changed</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ride-bar">
+      <button class="ride-btn" id="btnRide">
+        <span class="ride-dot"></span><span id="rideLabel">Start ride</span>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toasts" id="toasts"></div>
+
+  <!-- Settings sheet -->
+  <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+  <aside class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-grab"></div>
+    <div class="sheet-head">
+      <div class="tabs">
+        <button class="tab active" data-tab="settings">Settings</button>
+        <button class="tab" data-tab="history">History</button>
+      </div>
+      <button class="icon-btn" id="btnCloseSheet" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="sheet-body" data-panel="settings">
+      <div class="group">
+        <div class="group-title">Alerts</div>
+        <div class="row">
+          <div><div class="row-title">Notifications</div><div class="row-hint" id="notifHint">Not enabled</div></div>
+          <button class="chip" id="btnNotif">Enable</button>
+        </div>
+        <label class="row">
+          <div><div class="row-title">Sound on alerts</div></div>
+          <input type="checkbox" class="switch" id="setSound">
+        </label>
+        <label class="row">
+          <div><div class="row-title">Keep screen on while riding</div><div class="row-hint">Keeps GPS tracking alive</div></div>
+          <input type="checkbox" class="switch" id="setWake">
+        </label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Counters</div>
+        <label class="row"><span class="row-title">Odometer (km)</span><input type="number" inputmode="decimal" step="0.1" id="setOdo"></label>
+        <label class="row"><span class="row-title">Fuel range left (km)</span><input type="number" inputmode="decimal" step="1" id="setFuel"></label>
+        <label class="row"><span class="row-title">Last oil change at (km)</span><input type="number" inputmode="decimal" step="1" id="setLastOil"></label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Oil (vidange)</div>
+        <label class="row"><span class="row-title">Change every (km)</span><input type="number" inputmode="numeric" id="setOilInterval"></label>
+        <label class="row"><span class="row-title">Warn when (km) left</span><input type="number" inputmode="numeric" id="setOilWarn"></label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Fuel</div>
+        <label class="row"><span class="row-title">One fill = (km)</span><input type="number" inputmode="numeric" id="setFuelPerFill"></label>
+        <label class="row"><span class="row-title">One fill costs (DT)</span><input type="number" inputmode="decimal" id="setFuelPrice"></label>
+        <label class="row"><span class="row-title">Warn when (km) left</span><input type="number" inputmode="numeric" id="setFuelWarn"></label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">GPS</div>
+        <label class="row">
+          <div><div class="row-title">Estimate distance during GPS gaps</div><div class="row-hint">Adds straight-line distance when the app was paused</div></div>
+          <input type="checkbox" class="switch" id="setGapFill">
+        </label>
+        <label class="row">
+          <div><div class="row-title">Simulation mode</div><div class="row-hint">Fake ride for testing, no GPS</div></div>
+          <input type="checkbox" class="switch" id="setSim">
+        </label>
+        <label class="row"><span class="row-title">Simulation speed-up</span>
+          <select id="setSimMul"><option value="1">1×</option><option value="10">10×</option><option value="60">60×</option><option value="300">300×</option></select>
+        </label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Data</div>
+        <div class="row"><span class="row-title">Fuel spent total</span><span class="row-value" id="fuelSpent">0 DT</span></div>
+        <div class="row"><span class="row-title">Distance tracked by app</span><span class="row-value" id="appKm">0 km</span></div>
+        <div class="row"><span class="row-title">Storage</span><span class="row-value" id="storageInfo">…</span></div>
+        <div class="btn-row">
+          <button class="chip" id="btnExport">Export backup</button>
+          <label class="chip">Import<input type="file" accept="application/json" id="fileImport" hidden></label>
+          <button class="chip danger" id="btnReset">Factory reset</button>
+        </div>
+      </div>
+      <p class="foot-note">MotoDash · data stays on this phone</p>
+    </div>
+
+    <div class="sheet-body" data-panel="history" hidden>
+      <ul class="history" id="historyList"></ul>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
