@@ -19,12 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
+      - name: Show project structure
         working-directory: ios
-        run: xcodegen generate
+        run: xcodebuild -list -project MotoDash.xcodeproj
 
       - name: Build for iPhone (unsigned)
         working-directory: ios

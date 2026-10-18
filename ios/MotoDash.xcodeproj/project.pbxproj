@@ -1,0 +1,445 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3317587B12E4B5D1FC10B329 /* BackupCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BBA0C7227E72F7228275109 /* BackupCodec.swift */; };
+		8C31C49082F858FE40B6B06D /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DCF554A744822EB8CBBFEE /* Components.swift */; };
+		C8C381EC4F24DD60A22887DC /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339BD58C8A87EDAB41A2F732 /* DashboardView.swift */; };
+		65E6D49246C0C6F77E3249A7 /* GaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E802745BE90D3A3D2BDFF8 /* GaugeView.swift */; };
+		992C5391D13F9AF56714D51F /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CED7123CFD9E3931D949A /* HistoryView.swift */; };
+		C67C0BAC05E1AA82334FE5F1 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBEC09D0CA0712157AE55C6 /* Models.swift */; };
+		A296DD8720980E21FAA5CD75 /* MotoDashApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E59C6EBC53BCC46122B96A /* MotoDashApp.swift */; };
+		1C94E00C49470D9790C625BF /* Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D59D0E94E8F47EEB53F2698 /* Reminders.swift */; };
+		93DFCB4083DD590025D69E0B /* RideEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DB0E66FB7F52DC64F086EA /* RideEngine.swift */; };
+		9E2E0BB1072068EEB45EFC51 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96CA9D3AF4D0C72565C59EAC /* SettingsView.swift */; };
+		8ED84381FB50D830264844F2 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A57B58B70FB407258900C62 /* Store.swift */; };
+		A2C4AED104F3CB962C061235 /* RideShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D237FDEAC5F7B50BD60F2AC /* RideShared.swift */; };
+		FCBF58A5A29A808213902296 /* RideShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D237FDEAC5F7B50BD60F2AC /* RideShared.swift */; };
+		8C0418C7A7FFD6AEEB1F995B /* RideLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CEEE0B744A9313FAAED48A /* RideLiveActivity.swift */; };
+		36029E25DFFCD245C3223539 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C3A5B3FF3EF25D4C6318D65 /* Assets.xcassets */; };
+		CDC5B9B44CB232D20C3D6B0B /* MotoDashWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 373912F1B1C7BF1D30682915 /* MotoDashWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1CA1D9000442ADC2FA6A1F54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D18E3D8BE0E582E686460BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E58270F8D9E1FDCAC0FA5C0;
+			remoteInfo = MotoDashWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3BE66EE9AE3E5982A1A20D28 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CDC5B9B44CB232D20C3D6B0B /* MotoDashWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4BBA0C7227E72F7228275109 /* BackupCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCodec.swift; sourceTree = "<group>"; };
+		91DCF554A744822EB8CBBFEE /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		339BD58C8A87EDAB41A2F732 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		27E802745BE90D3A3D2BDFF8 /* GaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeView.swift; sourceTree = "<group>"; };
+		551CED7123CFD9E3931D949A /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		7EBEC09D0CA0712157AE55C6 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		14E59C6EBC53BCC46122B96A /* MotoDashApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotoDashApp.swift; sourceTree = "<group>"; };
+		0D59D0E94E8F47EEB53F2698 /* Reminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminders.swift; sourceTree = "<group>"; };
+		F1DB0E66FB7F52DC64F086EA /* RideEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideEngine.swift; sourceTree = "<group>"; };
+		96CA9D3AF4D0C72565C59EAC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0A57B58B70FB407258900C62 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		72CEEE0B744A9313FAAED48A /* RideLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideLiveActivity.swift; sourceTree = "<group>"; };
+		5D237FDEAC5F7B50BD60F2AC /* RideShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideShared.swift; sourceTree = "<group>"; };
+		4C3A5B3FF3EF25D4C6318D65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EA4FEF8614008F3687A6B049 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		941D4C34B2753F575FDEDB66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B57352873E934588C2C9D569 /* MotoDash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MotoDash.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		373912F1B1C7BF1D30682915 /* MotoDashWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MotoDashWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4525BBA91151D8A93E3E075A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D0977177076A433997812C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		91288206BB3009A39EED8728 /* None */ = {
+			isa = PBXGroup;
+			children = (
+				3C7B15D8754B6B187CABF1C7 /* MotoDash */,
+				EE95F12DA06C6065B3919AF1 /* MotoDashWidgets */,
+				E91C8E8BFE7FC63F800DE9E4 /* Shared */,
+				B9A7238B167C2D7E2AF35CE7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3C7B15D8754B6B187CABF1C7 /* MotoDash */ = {
+			isa = PBXGroup;
+			children = (
+				4BBA0C7227E72F7228275109 /* BackupCodec.swift */,
+				91DCF554A744822EB8CBBFEE /* Components.swift */,
+				339BD58C8A87EDAB41A2F732 /* DashboardView.swift */,
+				27E802745BE90D3A3D2BDFF8 /* GaugeView.swift */,
+				551CED7123CFD9E3931D949A /* HistoryView.swift */,
+				7EBEC09D0CA0712157AE55C6 /* Models.swift */,
+				14E59C6EBC53BCC46122B96A /* MotoDashApp.swift */,
+				0D59D0E94E8F47EEB53F2698 /* Reminders.swift */,
+				F1DB0E66FB7F52DC64F086EA /* RideEngine.swift */,
+				96CA9D3AF4D0C72565C59EAC /* SettingsView.swift */,
+				0A57B58B70FB407258900C62 /* Store.swift */,
+				4C3A5B3FF3EF25D4C6318D65 /* Assets.xcassets */,
+				EA4FEF8614008F3687A6B049 /* Info.plist */,
+			);
+			path = MotoDash;
+			sourceTree = "<group>";
+		};
+		EE95F12DA06C6065B3919AF1 /* MotoDashWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				72CEEE0B744A9313FAAED48A /* RideLiveActivity.swift */,
+				941D4C34B2753F575FDEDB66 /* Info.plist */,
+			);
+			path = MotoDashWidgets;
+			sourceTree = "<group>";
+		};
+		E91C8E8BFE7FC63F800DE9E4 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				5D237FDEAC5F7B50BD60F2AC /* RideShared.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		B9A7238B167C2D7E2AF35CE7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B57352873E934588C2C9D569 /* MotoDash.app */,
+				373912F1B1C7BF1D30682915 /* MotoDashWidgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CDD5AD4226F204ADB4D4D90D /* MotoDash */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCED2E91343BCD7240D75921 /* Build configuration list for PBXNativeTarget "MotoDash" */;
+			buildPhases = (
+				B6DF81F42503F8AA1376E621 /* Sources */,
+				4525BBA91151D8A93E3E075A /* Frameworks */,
+				ABAB0FE5553BC9303176E55F /* Resources */,
+				3BE66EE9AE3E5982A1A20D28 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1323E03FF7CB2725616CE711 /* PBXTargetDependency */,
+			);
+			name = MotoDash;
+			productName = MotoDash;
+			productReference = B57352873E934588C2C9D569 /* MotoDash.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0E58270F8D9E1FDCAC0FA5C0 /* MotoDashWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5875C9F8142A4683F9ADFAF0 /* Build configuration list for PBXNativeTarget "MotoDashWidgets" */;
+			buildPhases = (
+				51499701A6139BE34104A410 /* Sources */,
+				4D0977177076A433997812C5 /* Frameworks */,
+				EEE8BEBFBC0FDE0AC7C3FEB4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MotoDashWidgets;
+			productName = MotoDashWidgets;
+			productReference = 373912F1B1C7BF1D30682915 /* MotoDashWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D18E3D8BE0E582E686460BF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					CDD5AD4226F204ADB4D4D90D = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					0E58270F8D9E1FDCAC0FA5C0 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 4F3AC26921413AD351A4DF29 /* Build configuration list for PBXProject "MotoDash" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 91288206BB3009A39EED8728;
+			productRefGroup = B9A7238B167C2D7E2AF35CE7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CDD5AD4226F204ADB4D4D90D /* MotoDash */,
+				0E58270F8D9E1FDCAC0FA5C0 /* MotoDashWidgets */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ABAB0FE5553BC9303176E55F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36029E25DFFCD245C3223539 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EEE8BEBFBC0FDE0AC7C3FEB4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B6DF81F42503F8AA1376E621 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3317587B12E4B5D1FC10B329 /* BackupCodec.swift in Sources */,
+				8C31C49082F858FE40B6B06D /* Components.swift in Sources */,
+				C8C381EC4F24DD60A22887DC /* DashboardView.swift in Sources */,
+				65E6D49246C0C6F77E3249A7 /* GaugeView.swift in Sources */,
+				992C5391D13F9AF56714D51F /* HistoryView.swift in Sources */,
+				C67C0BAC05E1AA82334FE5F1 /* Models.swift in Sources */,
+				A296DD8720980E21FAA5CD75 /* MotoDashApp.swift in Sources */,
+				1C94E00C49470D9790C625BF /* Reminders.swift in Sources */,
+				93DFCB4083DD590025D69E0B /* RideEngine.swift in Sources */,
+				9E2E0BB1072068EEB45EFC51 /* SettingsView.swift in Sources */,
+				8ED84381FB50D830264844F2 /* Store.swift in Sources */,
+				A2C4AED104F3CB962C061235 /* RideShared.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		51499701A6139BE34104A410 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C0418C7A7FFD6AEEB1F995B /* RideLiveActivity.swift in Sources */,
+				FCBF58A5A29A808213902296 /* RideShared.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1323E03FF7CB2725616CE711 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E58270F8D9E1FDCAC0FA5C0 /* MotoDashWidgets */;
+			targetProxy = 1CA1D9000442ADC2FA6A1F54 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8BA6B635674C57CEB4BBAA6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MotoDash/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elyeskacem.motodash;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		25B1DBCA9CF6393043C1CD16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MotoDash/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elyeskacem.motodash;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		31DFDFCF1CD9C7608AB0AE95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MotoDashWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elyeskacem.motodash.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		DBD803D953F71C00F0941692 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MotoDashWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elyeskacem.motodash.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F41095AD93827F187E58E319 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		99C0C482DEAE27FCBE128951 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F3AC26921413AD351A4DF29 /* Build configuration list for PBXProject "MotoDash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F41095AD93827F187E58E319 /* Debug */,
+				99C0C482DEAE27FCBE128951 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCED2E91343BCD7240D75921 /* Build configuration list for PBXNativeTarget "MotoDash" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BA6B635674C57CEB4BBAA6D /* Debug */,
+				25B1DBCA9CF6393043C1CD16 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5875C9F8142A4683F9ADFAF0 /* Build configuration list for PBXNativeTarget "MotoDashWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31DFDFCF1CD9C7608AB0AE95 /* Debug */,
+				DBD803D953F71C00F0941692 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D18E3D8BE0E582E686460BF /* Project object */;
+}

@@ -16,7 +16,7 @@ Requires iOS 17+. Never compiled or run by the author of this repo yet: see "Sta
 
 ```
 ios/
-  project.yml            XcodeGen definition (app + Live Activity extension)
+  MotoDash.xcodeproj     open this in Xcode (app + Live Activity extension)
   Shared/                code used by both targets (activity attributes, island modes, button intent)
   MotoDash/              the app
     RideEngine.swift     GPS, background tracking, distance rules, reminders, notifications, Live Activity
@@ -27,19 +27,14 @@ ios/
   MotoDashWidgets/       Dynamic Island + Lock Screen UI
 ```
 
-The `.xcodeproj` is generated, not committed.
-
 ## Option A: you have a Mac
 
-```bash
-brew install xcodegen
-cd ios
-xcodegen generate
-open MotoDash.xcodeproj
-```
-In Xcode: select the **MotoDash** target and the **MotoDashWidgets** target → *Signing & Capabilities* → pick your Apple ID team (free works). Plug in the iPhone, enable *Settings → Privacy & Security → Developer Mode*, press Run.
+1. `git pull`, then in Finder open **`ios/MotoDash.xcodeproj`** (double-click it). Xcode 15 or newer. Open the `.xcodeproj` itself, not the `ios` folder.
+2. Click the blue **MotoDash** project in the left sidebar. For **both** targets, **MotoDash** and **MotoDashWidgets**, go to *Signing & Capabilities*, tick *Automatically manage signing* and pick your Apple ID under *Team* (free works).
+3. **Change the bundle identifiers** to something unique to you. Apple refuses an id that another account already signed. Use a pattern like `com.yourname.motodash` for MotoDash, and the **same id plus `.widgets`** for MotoDashWidgets (`com.yourname.motodash.widgets`). The extension's id must start with the app's id.
+4. Plug in the iPhone, enable *Settings → Privacy & Security → Developer Mode*, choose the iPhone as the run destination and press ▶︎.
 
-To change the bundle id (`com.elyeskacem.motodash`), edit `ios/project.yml` and regenerate.
+If Xcode shows the folder but no project, you opened the wrong thing: it must be `MotoDash.xcodeproj`.
 
 ## Option B: Windows only (no Mac)
 
