@@ -1,0 +1,58 @@
+name: Build Flutter iOS app
+
+# Analyzes + tests the Dart code, compiles the iPhone app (including the Dynamic Island
+# extension) on a GitHub Mac, and uploads an unsigned .ipa you can sign with Sideloadly.
+
+on:
+  push:
+    paths:
+      - "flutter_app/**"
+      - ".github/workflows/flutter-ios-build.yml"
+  pull_request:
+    paths:
+      - "flutter_app/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.7"
+          cache: true
+
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      - name: Build iOS (unsigned)
+        run: |
+          set -o pipefail
+          flutter build ios --release --no-codesign 2>&1 | tee build.log | tail -n 40
+
+      - name: Package unsigned .ipa
+        run: |
+          rm -rf Payload MotoDash-flutter-unsigned.ipa
+          mkdir Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qr MotoDash-flutter-unsigned.ipa Payload
+          echo "Extensions inside the app:"; ls Payload/Runner.app/PlugIns
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MotoDash-flutter-unsigned-ipa
+          path: flutter_app/MotoDash-flutter-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: flutter-build-log
+          path: flutter_app/build.log
