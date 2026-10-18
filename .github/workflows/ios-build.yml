@@ -1,0 +1,60 @@
+name: Build iOS app
+
+# Compiles the app for a real iPhone (no signing) and uploads an unsigned .ipa.
+# Sign + install that .ipa on your iPhone with Sideloadly or AltStore (see ios/README.md).
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-build.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build for iPhone (unsigned)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project MotoDash.xcodeproj \
+            -scheme MotoDash \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tee build.log | tail -n 60
+
+      - name: Package unsigned .ipa
+        working-directory: ios
+        run: |
+          rm -rf Payload MotoDash-unsigned.ipa
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/MotoDash.app Payload/
+          zip -qr MotoDash-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MotoDash-unsigned-ipa
+          path: ios/MotoDash-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-log
+          path: ios/build.log
