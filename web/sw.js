@@ -1,5 +1,5 @@
 // MotoDash service worker: offline app shell + notification clicks.
-const CACHE = 'motodash-v1';
+const CACHE = 'motodash-v2';
 const SHELL = [
   './',
   './index.html',

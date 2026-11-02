@@ -21,6 +21,9 @@
       <div class="gps" id="gpsStatus"><span class="dot"></span><span id="gpsText">GPS off</span></div>
       <div class="clock" id="clock">--:--</div>
       <div class="status-actions">
+        <button class="icon-btn" id="btnLock" aria-label="Lock screen">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </button>
         <button class="icon-btn" id="btnSettings" aria-label="Settings">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
@@ -112,6 +115,18 @@
   <!-- Toasts -->
   <div class="toasts" id="toasts"></div>
 
+  <!-- Screen lock: drag the knob down the left edge, then right along the bottom -->
+  <div class="lock" id="lock" hidden>
+    <svg class="lock-svg" id="lockSvg" aria-hidden="true">
+      <path id="lockPath" class="lock-path"/>
+      <path id="lockDone" class="lock-done"/>
+    </svg>
+    <div class="lock-hint" id="lockHint">Slide ↓ then → to unlock</div>
+    <div class="lock-knob" id="lockKnob">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+  </div>
+
   <!-- Settings sheet -->
   <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
   <aside class="sheet" id="sheet" aria-hidden="true">
@@ -148,6 +163,14 @@
         <label class="row"><span class="row-title">Odometer (km)</span><input type="number" inputmode="decimal" step="0.1" id="setOdo"></label>
         <label class="row"><span class="row-title">Fuel range left (km)</span><input type="number" inputmode="decimal" step="1" id="setFuel"></label>
         <label class="row"><span class="row-title">Last oil change at (km)</span><input type="number" inputmode="decimal" step="1" id="setLastOil"></label>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Missed distance</div>
+        <label class="row">
+          <div><div class="row-title">Add km</div><div class="row-hint">Counted as ridden: odometer, trip, fuel, oil</div></div>
+          <span class="add-km"><input type="number" inputmode="decimal" step="0.1" min="0" placeholder="km" id="addKm"><button class="chip" id="btnAddKm">+KM</button></span>
+        </label>
       </div>
 
       <div class="group">

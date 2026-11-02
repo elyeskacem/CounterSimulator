@@ -34,9 +34,14 @@ Then on the iPhone:
 
 All values and thresholds are editable in Settings. The refuel, oil change and trip reset buttons need two taps, so you can't press them by accident.
 
+- **Missed km** (Settings → Missed distance → **+KM**): adds km the GPS didn't catch, as if ridden: odometer, trip, fuel range and oil countdown all move, and History shows it. It doesn't count as "distance tracked by app".
+- **Screen lock** (🔒 next to ⚙): blocks every touch while riding. To unlock, drag the lock knob **down the left edge, then right along the bottom** (an L). Stays locked after a reload.
+
 ## Data
 
 Saved on the phone in **IndexedDB** (with a localStorage copy). Use Settings → **Export backup** now and then; **Import** restores it on a new phone.
+
+If several copies are open at once (a Safari tab and the Home Screen app, say), each re-reads what the others saved before counting or saving, so one can't roll the odometer back.
 
 ## Background — iPhone limits
 

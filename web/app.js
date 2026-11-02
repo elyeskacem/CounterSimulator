@@ -49,9 +49,12 @@ const GAUGE_MAX = 160;
 const LS_KEY = 'motodash.state';
 const LS_EVENTS = 'motodash.events';
 
+const LS_LOCKED = 'motodash.locked';
+
 const $ = (id) => document.getElementById(id);
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const fmtInt = (n) => Math.round(n).toLocaleString('fr-FR');
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
 
 let state = structuredClone(DEFAULT_STATE);
 
@@ -64,7 +67,8 @@ const Store = {
   async open() {
     if (!('indexedDB' in window)) return null;
     try {
-      this.db = await new Promise((resolve, reject) => {
+      // iOS sometimes never answers indexedDB.open: don't wait forever, localStorage has a copy
+      this.db = await withTimeout(new Promise((resolve, reject) => {
         const req = indexedDB.open('motodash', 1);
         req.onupgradeneeded = () => {
           const db = req.result;
@@ -73,7 +77,7 @@ const Store = {
         };
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
-      });
+      }), 4000);
     } catch (e) {
       console.warn('IndexedDB unavailable, using localStorage only', e);
       this.db = null;
@@ -94,12 +98,13 @@ const Store = {
     let fromLs = null, fromDb = null;
     try { fromLs = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
     if (this.db) {
-      try { fromDb = await this.req('kv', 'readonly', (s) => s.get('state')); } catch (e) {}
+      try { fromDb = await withTimeout(this.req('kv', 'readonly', (s) => s.get('state')), 3000); } catch (e) {}
     }
     const pick = [fromLs, fromDb].filter(Boolean).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
     return pick ? mergeDefaults(pick) : null;
   },
 
+  // Everything before the first await runs synchronously: localStorage is written on return
   async saveState(s) {
     s.updatedAt = Date.now();
     try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (e) {}
@@ -151,30 +156,95 @@ function mergeDefaults(s) {
   };
 }
 
+/* Several copies of the app can be open at once (a Safari tab and the Home Screen
+   app, a tab iOS kept frozen for days…). Each holds its own state in memory, so
+   before using or saving it we check whether another copy saved in the meantime;
+   if so we continue from that data plus the distance this copy measured since.
+   Nothing is saved until the stored data has been loaded (ready). */
+let ready = false;
+let syncedAt = 0;               // updatedAt of the stored state the in-memory state is based on
+let pending = freshPending();   // distance measured since syncedAt, not saved yet
+
+function freshPending() { return { km: 0, appKm: 0, movingMs: 0, maxKmh: 0 }; }
+
+function applyPending() {
+  const p = pending;
+  state.odoKm += p.km;
+  state.appKm += p.appKm;
+  state.trip.km += p.km;
+  state.trip.movingMs += p.movingMs;
+  state.trip.maxKmh = Math.max(state.trip.maxKmh, p.maxKmh);
+  state.fuelKm -= p.km;
+  state.kmSinceFill += p.km;
+}
+
+// Returns true when another copy had saved newer data (now adopted)
+function refreshFromStorage() {
+  if (!ready) return false;
+  let stored = null;
+  try { stored = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) {}
+  if (!stored || !(stored.updatedAt > syncedAt)) return false;
+  state = mergeDefaults(stored);
+  syncedAt = stored.updatedAt;
+  applyPending();
+  render();
+  return true;
+}
+
+function persist(force = false) {
+  if (!ready) return Promise.resolve();
+  if (!force) refreshFromStorage();
+  const saved = Store.saveState(state);
+  syncedAt = state.updatedAt;
+  pending = freshPending();
+  return saved;
+}
+
 let saveTimer = null;
 function scheduleSave() {
   if (saveTimer) return;
-  saveTimer = setTimeout(() => { saveTimer = null; Store.saveState(state); }, 2000);
+  saveTimer = setTimeout(() => { saveTimer = null; persist(); }, 2000);
 }
-function saveNow() {
+function saveNow(force = false) {
   clearTimeout(saveTimer);
   saveTimer = null;
-  return Store.saveState(state);
+  return persist(force);
 }
 
 /* ---------------------------------------------------------
    Distance accounting + reminders
    --------------------------------------------------------- */
-function addDistance(km, movingSeconds = 0) {
+// manual = km typed in by the user: counts like ridden km, but not as "tracked by app"
+function addDistance(km, movingSeconds = 0, manual = false) {
   if (!(km > 0)) return;
+  refreshFromStorage();
+  const appKm = manual ? 0 : km;
   state.odoKm += km;
-  state.appKm += km;
+  state.appKm += appKm;
   state.trip.km += km;
   state.trip.movingMs += movingSeconds * 1000;
   state.fuelKm -= km;
   state.kmSinceFill += km;
+  pending.km += km;
+  pending.appKm += appKm;
+  pending.movingMs += movingSeconds * 1000;
   checkReminders();
   scheduleSave();
+}
+
+function addManualKm() {
+  const km = parseFloat($('addKm').value);
+  if (!(km > 0 && km <= 5000)) {
+    toast('Enter the km to add', 'Type the missed distance (e.g. 12.5), then tap +KM.', 'warn');
+    return;
+  }
+  addDistance(km, 0, true);
+  Store.addEvent({ type: 'manual', odo: state.odoKm, note: `+${km.toFixed(1)} km added by hand` });
+  toast(`+${km.toFixed(1)} km added`, `Odometer ${fmtInt(state.odoKm)} km · fuel ${Math.max(0, Math.floor(state.fuelKm))} km left`, 'ok');
+  $('addKm').value = '';
+  saveNow();
+  fillSettings();
+  render();
 }
 
 function checkReminders() {
@@ -229,6 +299,7 @@ function resetFuelFlags() {
 }
 
 function refuel() {
+  refreshFromStorage();
   const st = state.settings;
   state.fuelKm = Math.max(0, state.fuelKm) + st.fuelPerFill;
   state.fuelSpent += st.fuelPrice;
@@ -242,6 +313,7 @@ function refuel() {
 }
 
 function oilChanged() {
+  refreshFromStorage();
   state.lastOilKm = Math.floor(state.odoKm);
   state.flags.oilWarnTarget = state.flags.oilDueTarget = null;
   state.flags.oilOverdueStep = 0;
@@ -252,6 +324,7 @@ function oilChanged() {
 }
 
 function resetTrip() {
+  refreshFromStorage();
   const t = state.trip;
   if (t.km > 0.05) {
     Store.addEvent({ type: 'trip', odo: state.odoKm, note: `Trip ${t.km.toFixed(1)} km · ${fmtDuration(t.movingMs)} · max ${Math.round(t.maxKmh)} km/h` });
@@ -356,6 +429,7 @@ let simTimer = null;
 let wakeLock = null;
 
 function startRide() {
+  if (!ready) return;
   unlockAudio();
   riding = true;
   lastFix = null;
@@ -429,7 +503,9 @@ function onPosition(pos) {
 
   // App was paused (screen locked / other app): GPS had a gap
   if (dt > GPS.gapSeconds) {
-    if (state.settings.gapFill && d > 50 && implied < GPS.maxGapKmh) {
+    // If another copy of the app saved meanwhile, it already counted this time
+    const otherCopyCounted = refreshFromStorage();
+    if (!otherCopyCounted && state.settings.gapFill && d > 50 && implied < GPS.maxGapKmh) {
       const km = d / 1000;
       addDistance(km, 0);
       Store.addEvent({ type: 'gap', odo: state.odoKm, note: `Estimated ${km.toFixed(1)} km while app was paused (${fmtDuration(dt * 1000)})` });
@@ -491,7 +567,7 @@ function setSpeed(kmh, immediate) {
   kmh = clamp(kmh || 0, 0, 300);
   speedKmh = immediate ? kmh : speedKmh * 0.35 + kmh * 0.65;
   if (speedKmh < 1.5) speedKmh = 0;
-  if (riding && speedKmh > state.trip.maxKmh) state.trip.maxKmh = speedKmh;
+  if (riding && speedKmh > state.trip.maxKmh) state.trip.maxKmh = pending.maxKmh = speedKmh;
   renderSpeed();
 }
 
@@ -645,6 +721,7 @@ function fillSettings() {
 function onNumberChange(id) {
   const [key, scope] = numFields[id];
   const v = parseFloat($(id).value);
+  refreshFromStorage();
   if (!isFinite(v) || v < 0) { fillSettings(); return; }
   const old = scope ? state.settings[key] : state[key];
   if (scope) state.settings[key] = v; else state[key] = v;
@@ -664,6 +741,7 @@ function onNumberChange(id) {
 }
 
 function openSheet() {
+  refreshFromStorage();
   fillSettings();
   $('sheetBackdrop').hidden = false;
   $('sheet').classList.add('open');
@@ -676,8 +754,8 @@ function closeSheet() {
   document.activeElement?.blur();
 }
 
-const EVENT_ICONS = { fuel: '⛽', oil: '🛢', trip: '🏁', milestone: '🏆', gap: '📡', edit: '✎', import: '⤓' };
-const EVENT_TITLES = { fuel: 'Refuel', oil: 'Oil change', trip: 'Trip saved', milestone: 'Milestone', gap: 'GPS gap', edit: 'Manual edit', import: 'Backup imported' };
+const EVENT_ICONS = { fuel: '⛽', oil: '🛢', trip: '🏁', milestone: '🏆', gap: '📡', edit: '✎', import: '⤓', manual: '＋' };
+const EVENT_TITLES = { fuel: 'Refuel', oil: 'Oil change', trip: 'Trip saved', milestone: 'Milestone', gap: 'GPS gap', edit: 'Manual edit', import: 'Backup imported', manual: 'Km added' };
 
 async function renderHistory() {
   const list = (await Store.events()).sort((a, b) => b.at - a.at).slice(0, 200);
@@ -719,6 +797,8 @@ async function importBackup(file) {
     const data = JSON.parse(await file.text());
     if (data.app !== 'motodash' || !data.state) throw new Error('Not a MotoDash backup');
     state = mergeDefaults(data.state);
+    pending = freshPending();
+    await saveNow(true); // the backup replaces whatever any other copy saved
     if (Array.isArray(data.events)) await Store.replaceEvents(data.events);
     await Store.addEvent({ type: 'import', odo: state.odoKm, note: `From ${data.exportedAt || 'file'}` });
     await saveNow();
@@ -732,8 +812,9 @@ async function importBackup(file) {
 async function factoryReset() {
   if (riding) stopRide();
   state = structuredClone(DEFAULT_STATE);
+  pending = freshPending();
+  await saveNow(true);
   await Store.replaceEvents([]);
-  await saveNow();
   fillSettings(); render(); renderRideButton();
   toast('Reset done', 'Back to 10 820 km and 150 km of fuel.', 'ok');
 }
@@ -765,6 +846,120 @@ function armed(btn, label, action) {
 }
 
 /* ---------------------------------------------------------
+   Screen lock: blocks every touch (rain, gloves, bumps).
+   Unlock = drag the lock knob along an "L" by the screen edge:
+   down the left edge, then right along the bottom.
+   --------------------------------------------------------- */
+const Lock = {
+  on: false,
+  pts: null,      // [A, B, C]: start, corner, end of the L
+  len1: 0, len: 0,
+  progress: 0,    // distance travelled along the L
+  dragging: false,
+
+  layout() {
+    const el = $('lock'), cs = getComputedStyle(el);
+    const sl = parseFloat(cs.paddingLeft) || 0, sr = parseFloat(cs.paddingRight) || 0;
+    const st = parseFloat(cs.paddingTop) || 0, sb = parseFloat(cs.paddingBottom) || 0;
+    const w = window.innerWidth, h = window.innerHeight;
+    const x0 = sl + 40;                   // clear of the edge-swipe zone
+    const yTop = st + (h - st - sb) * 0.3;
+    const yCorner = h - sb - 84;          // above the iPhone home bar (swiping there switches apps)
+    const xEnd = w - sr - 40;
+    this.pts = [[x0, yTop], [x0, yCorner], [xEnd, yCorner]];
+    this.len1 = yCorner - yTop;
+    this.len = this.len1 + (xEnd - x0);
+    const [a, b, c] = this.pts;
+    $('lockSvg').setAttribute('viewBox', `0 0 ${w} ${h}`);
+    $('lockPath').setAttribute('d', `M${a} L${b} L${c}`);
+    const hint = $('lockHint');
+    hint.style.left = `${x0 + 44}px`;
+    hint.style.top = `${yCorner - 64}px`;
+    this.setProgress(0);
+  },
+
+  pointAt(p) {
+    const [a, b] = this.pts;
+    return p <= this.len1 ? [a[0], a[1] + p] : [b[0] + (p - this.len1), b[1]];
+  },
+
+  // Closest point of the L to (x, y): { p, dist }
+  project(x, y) {
+    const [a, b, c] = this.pts;
+    const y1 = clamp(y, a[1], b[1]), x2 = clamp(x, b[0], c[0]);
+    const d1 = Math.hypot(x - a[0], y - y1), d2 = Math.hypot(x - x2, y - b[1]);
+    return d1 <= d2 ? { p: y1 - a[1], dist: d1 } : { p: this.len1 + (x2 - b[0]), dist: d2 };
+  },
+
+  setProgress(p) {
+    this.progress = p;
+    const [x, y] = this.pointAt(p);
+    const knob = $('lockKnob');
+    knob.style.transform = `translate(${x - 30}px, ${y - 30}px)`;
+    const [a, b] = this.pts;
+    $('lockDone').setAttribute('d', p > 0 ? (p <= this.len1 ? `M${a} L${x},${y}` : `M${a} L${b} L${x},${y}`) : '');
+  },
+
+  snapBack() {
+    this.dragging = false;
+    $('lockKnob').classList.add('back');
+    this.setProgress(0);
+    setTimeout(() => $('lockKnob').classList.remove('back'), 300);
+  },
+
+  lock() {
+    closeSheet();
+    this.on = true;
+    $('lock').hidden = false;
+    this.layout();
+    try { localStorage.setItem(LS_LOCKED, '1'); } catch (e) {}
+  },
+
+  unlock() {
+    this.on = false;
+    this.dragging = false;
+    $('lock').hidden = true;
+    try { localStorage.removeItem(LS_LOCKED); } catch (e) {}
+    toast('Unlocked', '', 'ok', 1500);
+  },
+
+  bind() {
+    const el = $('lock'), knob = $('lockKnob');
+    // Swallow every touch so nothing underneath reacts, and iOS doesn't scroll or zoom
+    for (const type of ['touchstart', 'touchmove', 'touchend', 'gesturestart', 'contextmenu']) {
+      el.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+    }
+    el.addEventListener('pointerdown', (e) => {
+      const [kx, ky] = this.pointAt(this.progress);
+      if (Math.hypot(e.clientX - kx, e.clientY - ky) > 44) {
+        // Touched somewhere else: show where to slide
+        el.classList.remove('nudge'); void el.offsetWidth; el.classList.add('nudge');
+        return;
+      }
+      this.dragging = true;
+      knob.classList.add('held');
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!this.dragging) return;
+      const { p, dist } = this.project(e.clientX, e.clientY);
+      // Must stay on the track and move continuously along it
+      if (dist > 60 || Math.abs(p - this.progress) > 120) { knob.classList.remove('held'); this.snapBack(); return; }
+      this.setProgress(p);
+    });
+    const end = () => {
+      if (!this.dragging) return;
+      knob.classList.remove('held');
+      if (this.progress >= this.len - 16) this.unlock();
+      else this.snapBack();
+    };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', () => { knob.classList.remove('held'); this.snapBack(); });
+    window.addEventListener('resize', () => { if (this.on) this.layout(); });
+  },
+};
+
+/* ---------------------------------------------------------
    Boot
    --------------------------------------------------------- */
 function bindUi() {
@@ -773,7 +968,10 @@ function bindUi() {
   armed($('btnRefuel'), 'Confirm paid?', refuel);
   armed($('btnOil'), 'Confirm?', oilChanged);
   armed($('btnReset'), 'Tap again to erase all', factoryReset);
+  armed($('btnAddKm'), 'Confirm?', addManualKm);
 
+  $('btnLock').addEventListener('click', () => Lock.lock());
+  Lock.bind();
   $('btnSettings').addEventListener('click', openSheet);
   $('btnCloseSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
@@ -786,6 +984,7 @@ function bindUi() {
   for (const id of Object.keys(numFields)) $(id).addEventListener('change', () => onNumberChange(id));
   for (const [id, key] of Object.entries(boolFields)) {
     $(id).addEventListener('change', () => {
+      refreshFromStorage();
       state.settings[key] = $(id).checked;
       if (key === 'sim' && riding) { stopRide(); }
       if (key === 'wake') state.settings.wake && riding ? requestWakeLock() : releaseWakeLock();
@@ -795,6 +994,7 @@ function bindUi() {
     });
   }
   $('setSimMul').addEventListener('change', () => {
+    refreshFromStorage();
     state.settings.simMul = Number($('setSimMul').value);
     if (riding && state.settings.sim) setGps('sim', `SIM ×${state.settings.simMul}`);
     saveNow();
@@ -814,11 +1014,15 @@ function bindUi() {
     if (document.visibilityState === 'hidden') {
       saveNow();
     } else {
+      refreshFromStorage();
       if (riding) requestWakeLock();
       audioCtx?.resume?.();
     }
   });
-  window.addEventListener('pagehide', () => { Store.saveState(state); });
+  window.addEventListener('pagehide', () => { persist(); });
+  window.addEventListener('pageshow', () => refreshFromStorage());
+  // Another open copy of the app saved
+  window.addEventListener('storage', (e) => { if (e.key === LS_KEY) refreshFromStorage(); });
 }
 
 function tick() {
@@ -830,12 +1034,16 @@ function tick() {
 
 async function init() {
   buildGauge();
-  bindUi();
 
+  // Load the saved data before anything can save or count km: saving the defaults
+  // first would overwrite the real odometer (that's how it fell back to 10 820 km)
   await Store.open();
   const saved = await Store.loadState();
-  if (saved) state = saved;
-  else await Store.saveState(state);
+  ready = true;
+  if (saved) { state = saved; syncedAt = saved.updatedAt || 0; }
+  else await saveNow(true);
+  bindUi();
+  try { if (localStorage.getItem(LS_LOCKED)) Lock.lock(); } catch (e) {}
 
   let persisted = false;
   try { persisted = await navigator.storage?.persist?.(); } catch (e) {}
